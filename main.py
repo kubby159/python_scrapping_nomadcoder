@@ -1,19 +1,19 @@
 from bs4 import BeautifulSoup
-import requests
+from requests import get
 
-def extract_jobs(term):
-    url = f"https://remoteok.com/remote-{term}-jobs"
-    request = requests.get(url, headers={"User-Agent": "Kimchi"})
-    if request.status_code == 200:
-      soup = BeautifulSoup(request.text, "html.parser")
+base_url = 'https://weworkremotely.com/remote-jobs/search?term='
+search_term = "python"
 
-      # write your ✨magical✨ code here
-      result = soup.select('a.preventLink')
-      for x in result:
-        print(x.getText().strip())
 
-    else:
-      print("Can't get jobs.")
-
-extract_jobs("rust")
+response = get(f"{base_url}{search_term}")
+if response.status_code != 200:
+    print("Can't request website")
+else:
+    soup = BeautifulSoup(response.text, 'html.parser')
+    jobs_posts = soup.find_all('section', class_='jobs')
+    jobs_posts.pop(-1) # 가장 마지막 데이터 제거.
+    for job_section in jobs_posts:
+        job_posts = job_section.find_all('li')
+        for post in job_posts:
+            print(post.text)
 
