@@ -26,7 +26,7 @@ def extract_wwr_jobs(keyword):
                     "link": f'https://weworkremotely.com{link}',
                     "company": company.string,
                     "kind": kind.string,
-                    "region": region.string,
+                    "location": region.string,
                     "title": title.string
                 }
                 results.append(job_data)  # list 안에 저장하기.
