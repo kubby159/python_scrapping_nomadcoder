@@ -7,6 +7,11 @@ from requests import get
 from extractors.wwr import extract_wwr_jobs
 
 
+
+
+
+
+
 def get_page_count(keyword):
     base_url = 'https://kr.indeed.com/jobs?q='
     chrome_options = webdriver.ChromeOptions()
@@ -38,37 +43,29 @@ def get_page_count(keyword):
             results.append(job_data)
 
 
-    for page_num in range(len(pages)):
-        base_url=f'https://kr.indeed.com/jobs?q=python&start={(page_num+1)*10}'
-        browser.get(base_url)
-        soup = BeautifulSoup(browser.page_source, 'html.parser')
-        job_list = soup.find('ul', class_='jobsearch-ResultsList')
-        jobs = job_list.find_all('li', recursive=False)
-        for job in jobs:
-            zone = job.find('div', class_='mosaic-zone')
-            if zone == None:
-                anchor = job.select_one("h2 a")
-                title = anchor['aria-label']
-                link = anchor['href']
-                company = job.find('span', class_='companyName')
-                location = job.find('div', class_='companyLocation')
-                job_data = {
-                    "link": f"https://kr.indeed.com{link}",
-                    "company": company.string,
-                    "location": location.string,
-                    "position": title
-                }
-                results.append(job_data)
-    for result in results:
-        print(result, "///////\n")
+    # for page_num in range(len(pages)):
+    #     base_url=f'https://kr.indeed.com/jobs?q=python&start={(page_num+1)*10}'
+    #     browser.get(base_url)
+    #     soup = BeautifulSoup(browser.page_source, 'html.parser')
+    #     job_list = soup.find('ul', class_='jobsearch-ResultsList')
+    #     jobs = job_list.find_all('li', recursive=False)
+    #     for job in jobs:
+    #         zone = job.find('div', class_='mosaic-zone')
+    #         if zone == None:
+    #             anchor = job.select_one("h2 a")
+    #             title = anchor['aria-label']
+    #             link = anchor['href']
+    #             company = job.find('span', class_='companyName')
+    #             location = job.find('div', class_='companyLocation')
+    #             job_data = {
+    #                 "link": f"https://kr.indeed.com{link}",
+    #                 "company": company.string,
+    #                 "location": location.string,
+    #                 "position": title
+    #             }
+    #             results.append(job_data)
+    return results
 
-
-
-
-
-
-
-get_page_count('python')
 
 
 def extract_indeed_jobs(keyword):
@@ -98,3 +95,13 @@ def extract_indeed_jobs(keyword):
 
     for result in results:
         print(result, "\n///////\n")
+
+
+job_list = get_page_count('python')
+file = open(f"job_list.csv", "w")
+file.write("Position,Company,Location,URL\n")
+
+for job in job_list:
+    file.write(f"{job['position']},{job['company']},{job['location']},{job['link']}\n")
+
+file.close()
